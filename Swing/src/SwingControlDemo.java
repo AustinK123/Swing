@@ -15,8 +15,8 @@ public class SwingControlDemo implements ActionListener {
     private JPanel inputPanel;
     private JMenuItem cut, copy, paste, selectAll;
     private JTextArea ta;
-    private int WIDTH = 400;
-    private int HEIGHT = 300;
+    private int WIDTH = 800;
+    private int HEIGHT = 600;
 
     private final static String newline = "\n";
 
@@ -36,23 +36,18 @@ public class SwingControlDemo implements ActionListener {
         mainFrame.setSize(WIDTH, HEIGHT);
         mainFrame.setLayout(new GridLayout());
 
-
-
-        cut = new JMenuItem("cut");
-        copy = new JMenuItem("copy");
-        paste = new JMenuItem("paste");
-        selectAll = new JMenuItem("selectAll");
-        cut.addActionListener(this);
-        copy.addActionListener(this);
-        paste.addActionListener(this);
-        selectAll.addActionListener(this);
-
-        ta = new JTextArea("enter input");
+        ta = new JTextArea("https://www.milton.edu/");
         ta.setLineWrap(true);
 
 
         headerLabel = new JLabel("", JLabel.CENTER);
         statusLabel = new JTextArea("ta");
+
+        JScrollPane scrollableTextArea = new JScrollPane(statusLabel);
+
+        scrollableTextArea.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
+        scrollableTextArea.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+
         statusLabel.setSize(350, 100);
 
         mainFrame.addWindowListener(new WindowAdapter() {
@@ -124,20 +119,35 @@ public class SwingControlDemo implements ActionListener {
             System.out.println();
             System.out.print("hello \n");
             URL url = new URL(ta.getText());
-
+            url = new URL("https://www.milton.edu/");
             BufferedReader reader = new BufferedReader(
                     new InputStreamReader(url.openStream())
             );
             String line;
             while ( (line = reader.readLine()) != null ) {
 
-                System.out.println(line);
-//                thatbottomrighttextarea.append(line);
+
+                if (line.contains("https://")) {
+                    try {
+                        int start = line.indexOf("https");
+                        int end = line.indexOf("\"", start);
+
+                        while (end >= 1) {
+                            String link = line.substring(start, end);
+                            System.out.println(link);
+
+                            line = line.substring(end + 1);
+                            start = line.indexOf("https");
+
+                            end = line.indexOf("\"", start);
+                            statusLabel.append(link + "\n");
+                        }
+                    }catch (Exception e){}
+                }
             }
             reader.close();
         } catch(Exception ex) {
             System.out.println(ex);
-            statusLabel.setText(String.valueOf(ex));
         }
 
     }
@@ -147,9 +157,9 @@ public class SwingControlDemo implements ActionListener {
             String command = e.getActionCommand();
 
             if (command.equals("Go")){
-                statusLabel.setText("Go Button clicked.");
+                statusLabel.setText("Go Button clicked. \n \n");
+                //EXAMPLE LINK: https://www.milton.edu
                 HtmlRead();
-                //statusLabel.setText(url);
             }
         }
     }
